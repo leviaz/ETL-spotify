@@ -7,9 +7,9 @@ from datetime import datetime
 import datetime
 import sqlite3
 
-DATABASE_LOCATION = "sqlite://my_played_tracks.sqlite"
+DATABASE_LOCATION = "sqlite:///my_played_tracks.sqlite"
 USER_ID="Leviaz"
-TOKEN = "BQA9kZZVvO_alnNgtpGsHqmVibgZ-ei5D7IWYEAGGTR4pDmKCQ2cRXe3de_6nD8dh2j0ETQG9TyDx7F0rQGMm8h9XucPZgKnFxdXEA5sr8cpiPXmDmJ_A9tMZmvTomhJnoEV2n58v2EuovQ3-IHSVmtQv-b92GVwC1kZ4QcKZih1CbEWIXD8p-uKRUToxAP7enr-lMT0vaa8dJ5PVEV0wn2Q34GZV4L1tMettPmg9Zq6kOQ9EuQOj-pI1dK9Oap84IF7Tss7OJ6_ZLXPfi99Oi9BIf_pcdtBsywY-E7RxG-9XNckJJnL-k6dJ3nB6KQurVvX_dvc1_bMS3dVXYjqxKOPoanIEN11XVaqEoJP7iwboMrIRUlH_eXZvXE"
+TOKEN = "BQD1LhDVYkit5F-fh5hqhA7kNcOtdRDXlfHGynsTwH1c1h5nGFaMthuGfQQOL3mjjkluQmDzoNoRELfRAoozikaWTOxNOxLbteCeiCH0g0K0oJ4qlXD8E5lrTShf0ti8hRJ-OE-nSJc9tQ3MR1KDyfCS7G8FZy8gi7r9hSiFVwnSpGBH7dcqnwazjZ9WENDp2QCxRS9eHHclPK5Tj_bD8kf8Bvf1XdNDoCbUY2OeS8tvnJx7eWkGDfKcP7wPRkZb1SXq6mgAo2frnuuIiXrRacKQ3lOLygA4n8gOFUjZArNTjzsFqUFOnmoXlF8sYdS27NYfMLjHGLvBzH_-ofsU9M71FPD8ExPKvAM1LBDvcAfowSIzQivDcNaArgM"
 
 def check_dataset(df: pd.DataFrame) -> bool:
     #Verify if dataframe is empty
@@ -72,4 +72,28 @@ if __name__=="__main__":
     
     if check_dataset(song_df):
         print("Validated data proceed to load stage")
+        
+        
+    #load
+    engine = sqlalchemy.create_engine(DATABASE_LOCATION)
+    conn = sqlite3.connect("my_played_tracks.sqlite")
+    cursor = conn.cursor()
+    sql_query="""CREATE TABLE IF NOT EXISTS my_played_tracks(
+            song_name VARCHAR(1000),
+            artist_name VARVHAR(200),
+            played_at VARCHAR(220),
+            timestamp VARCHAR(220),
+            CONSTRAINT primary_key_constraint PRIMARY KEY (played_at)
+    )"""
+    
+    cursor.execute(sql_query)
+    
+    # use pandas to overwrite the table with the dataFrame and if data exists just append it
+    try:
+        song_df.to_sql("my_played_tracks",engine,index=False,if_exists="append")
+    except:
+        print("Data already loaded")
+        
     print(song_df)
+    
+    conn.close()
